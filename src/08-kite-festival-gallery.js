@@ -80,20 +80,117 @@
  */
 export function renderKiteCard(kite) {
   // Your code here
+  if (
+    !kite ||
+    !kite.name ||
+    !kite.color ||
+    !kite.size ||
+    !kite.maker ||
+    !kite.image
+  ) {
+    return null;
+  }
+
+  const div = document.createElement("div");
+  div.className = "kite-card";
+
+  const img = document.createElement("img");
+  img.src = kite.image;
+  img.alt = kite.name;
+
+  const name = document.createElement("h3");
+  name.className = "kite-name";
+  name.textContent = kite.name;
+
+  const maker = document.createElement("p");
+  maker.className = "kite-maker";
+  maker.textContent = `by ${kite.maker}`;
+
+  const info = document.createElement("p");
+  info.className = "kite-info";
+  info.textContent = `${kite.size} - ${kite.color}`;
+
+  div.appendChild(img);
+  div.appendChild(name);
+  div.appendChild(maker);
+  div.appendChild(info);
+
+  return div;
 }
 
 export function renderGallery(container, kites) {
   // Your code here
+  if (!container || !Array.isArray(kites)) {
+    return -1;
+  }
+
+  container.innerHTML = "";
+
+  let count = 0;
+
+  for (let kite of kites) {
+    const card = renderKiteCard(kite);
+    if (card) {
+      container.appendChild(card);
+      count++;
+    }
+  }
+
+  return count;
 }
 
 export function filterKites(container, kites, filterFn) {
   // Your code here
+  if (!container || !Array.isArray(kites) || typeof filterFn !== "function") {
+    return -1;
+  }
+
+  const filtered = kites.filter(filterFn);
+
+  return renderGallery(container, filtered);
 }
 
 export function sortAndRender(container, kites, sortField, order) {
   // Your code here
+  if (!container || !Array.isArray(kites)) {
+    return [];
+  }
+
+  const sorted = [...kites];
+
+  sorted.sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (typeof valA === "string") valA = valA.toLowerCase();
+    if (typeof valB === "string") valB = valB.toLowerCase();
+
+    if (valA < valB) return order === "desc" ? 1 : -1;
+    if (valA > valB) return order === "desc" ? -1 : 1;
+    return 0;
+  });
+  
+  container.innerHTML = "";
+  for (let kite of sorted) {
+    const card = renderKiteCard(kite);
+    if (card) container.appendChild(card);
+  }
+
+  return sorted;
 }
 
 export function renderEmptyState(container, message) {
   // Your code here
+  if (!container) return false;
+
+  if (container.children.length === 0) {
+    const p = document.createElement("p");
+    p.className = "empty-state";
+    p.textContent = message;
+
+    container.appendChild(p);
+    return true;
+  }
+
+  return false;
 }
